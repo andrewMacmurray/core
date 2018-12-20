@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Core</title>
+    <link rel="stylesheet" href="https://unpkg.com/tachyons@4.10.0/css/tachyons.min.css"/>
+  </head>
+  <body>
+    <div id="elm-app"></div>
+    <script src="elm.js" charset="utf-8"></script>
+    <script>
+        var node = Elm.Main.init({
+          node: document.getElementById('elm-app'),
+          flags: {
+            height: window.innerHeight,
+            width: window.innerWidth
+          }
+        })
+    </script>
+  </body>
+</html>
