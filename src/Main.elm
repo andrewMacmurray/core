@@ -1,10 +1,12 @@
 module Main exposing (main)
 
+import Animation
 import Browser
 import Browser.Events exposing (onResize)
 import Core
 import Html exposing (Attribute, Html, div, text)
 import Html.Attributes exposing (class, style)
+import Html.Events exposing (onClick)
 
 
 
@@ -27,11 +29,14 @@ main =
 
 type alias Model =
     { window : Window
+    , coreAnimations : Core.Animations
     }
 
 
 type Msg
-    = WindowSize Int Int
+    = StartSequence
+    | WindowSize Int Int
+    | Animate Animation.Msg
 
 
 type alias Window =
@@ -51,7 +56,9 @@ init window =
 
 initialState : Window -> Model
 initialState window =
-    { window = window }
+    { window = window
+    , coreAnimations = Core.init
+    }
 
 
 
@@ -61,10 +68,16 @@ initialState window =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        StartSequence ->
+            ( { model | coreAnimations = Core.surge model.coreAnimations }, Cmd.none )
+
         WindowSize width height ->
             ( { model | window = Window (toFloat width) (toFloat height) }
             , Cmd.none
             )
+
+        Animate aniMsg ->
+            ( { model | coreAnimations = Core.update aniMsg model.coreAnimations }, Cmd.none )
 
 
 
@@ -72,8 +85,11 @@ update msg model =
 
 
 subscriptions : Model -> Sub Msg
-subscriptions _ =
-    onResize WindowSize
+subscriptions model =
+    Sub.batch
+        [ onResize WindowSize
+        , Animation.subscription Animate <| Core.animationsList model.coreAnimations
+        ]
 
 
 
@@ -87,8 +103,9 @@ view model =
         , style "background" "#1B1D44"
         , style "padding" "80px"
         , style "height" <| px model.window.height
+        , onClick StartSequence
         ]
-        [ Core.core ]
+        [ Core.core model.coreAnimations ]
 
 
 px : Float -> String
