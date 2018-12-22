@@ -1,11 +1,24 @@
-module Core exposing (Animations, animationsList, core, init, surge, update)
+module Core exposing
+    ( Animations
+    , animationsList
+    , centralCore
+    , core
+    , detached
+    , init
+    , pinkLines
+    , surge
+    , update
+    , whiteLines
+    )
 
 import Animation as A
 import Animation.Spring.Presets as S
+import Animations exposing (..)
 import Ease
+import Element.Animated as Animated
 import Svg exposing (Svg)
-import Svg.Animated as Animated
 import Svg.Attributes exposing (..)
+import Svg.Extra exposing (..)
 import Time
 
 
@@ -25,7 +38,7 @@ type alias Animations =
 
 init : Animations
 init =
-    { center = delayBy 500 fadeIn <| A.style [ A.opacity 0 ]
+    { center = delayBy 500 fadeIn <| A.style [ A.opacity 0, translateZero ]
     , pulse = delayBy 1500 [ A.loop pulse ] <| A.style [ A.opacity 0, coreOrigin ]
     , outerLines = A.style [ A.opacity 0 ]
     , whiteLines = A.style [ A.opacity 0 ]
@@ -37,6 +50,11 @@ init =
 coreOrigin : A.Property
 coreOrigin =
     A.transformOrigin (A.px 267) (A.px 298) (A.px 0)
+
+
+translateZero : A.Property
+translateZero =
+    A.translate (A.px 0) (A.px 0)
 
 
 update : A.Msg -> Animations -> Animations
@@ -69,20 +87,14 @@ surge a =
         , whiteLines = delayBy 200 [ A.repeat 2 flicker ] a.whiteLines
         , pinkLines = delayBy 0 [ A.repeat 2 flicker ] a.pinkLines
         , blueLines = delayBy 500 fadeInOut a.blueLines
+        , center = delayBy 2500 riseUp a.center
     }
 
 
-pulse =
-    [ A.set [ A.opacity 1, A.scale 1 ]
-    , A.toWith (A.easing { duration = 500, ease = Ease.bezier 0.25 0.1 0 1.01 }) [ A.opacity 0, A.scale 2.5 ]
-    , wait 1000
-    ]
-
-
-flicker =
-    [ A.set [ A.opacity 0 ]
-    , A.toWith (A.easing { duration = 800, ease = Ease.inOutElastic }) [ A.opacity 0.75 ]
-    , A.to [ A.opacity 0 ]
+riseUp =
+    [ A.toWith (spring 10 10)
+        [ A.translate (A.px 0) (A.px -150)
+        ]
     ]
 
 
@@ -94,12 +106,12 @@ fadeIn =
 
 fadeInOutSmooth =
     let
-        spring =
+        s =
             A.spring S.wobbly
     in
-    [ A.toWith spring [ A.opacity 0 ]
-    , A.toWith spring [ A.opacity 1 ]
-    , A.toWith spring [ A.opacity 0 ]
+    [ A.toWith s [ A.opacity 0 ]
+    , A.toWith s [ A.opacity 1 ]
+    , A.toWith s [ A.opacity 0 ]
     ]
 
 
@@ -110,20 +122,14 @@ fadeInOut =
     ]
 
 
-wait =
-    A.wait << Time.millisToPosix
-
-
-delayBy ms steps =
-    A.interrupt <| wait ms :: steps
-
-
-interruptSteps =
-    A.interrupt << List.concat
-
-
 
 -- View
+
+
+detached =
+    Svg.svg [ viewBox_ 0 0 130 130 ]
+        [ translated -205 -233 centralCore
+        ]
 
 
 core : Animations -> Svg msg
@@ -137,15 +143,14 @@ core animations =
             [ Animated.g animations.outerLines [] [ outerLines ]
             , Animated.g animations.whiteLines [] [ whiteLines ]
             , Animated.g animations.pinkLines [] [ pinkLines ]
-            , Animated.g animations.center [] [ centralCore ]
-            , Animated.g animations.pulse [] [ centralCore ]
+            , Animated.g animations.center
+                []
+                [ centralCore
+                , Animated.g animations.pulse [] [ centralCore ]
+                ]
             , Animated.g animations.blueLines [] [ blueLines ]
             ]
         ]
-
-
-viewBox_ minX minY maxX maxY =
-    viewBox <| String.join " " <| List.map String.fromFloat [ minX, minY, maxX, maxY ]
 
 
 outerLines =
