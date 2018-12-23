@@ -1,5 +1,6 @@
 module Element.Animated exposing
-    ( div
+    ( circle
+    , div
     , g
     )
 
@@ -8,17 +9,17 @@ import Html exposing (Html)
 import Svg
 
 
-div animatedStyle attrs =
-    Html.div <|
-        List.concat
-            [ Animation.render animatedStyle
-            , attrs
-            ]
+div animated =
+    Html.div <| Animation.render animated
 
 
-g animatedStyle attrs =
-    Svg.g <|
+g animated =
+    Svg.g <| Animation.render animated
+
+
+circle animated attrs =
+    Svg.circle <|
         List.concat
-            [ Animation.render animatedStyle
+            [ Animation.render animated
             , attrs
             ]

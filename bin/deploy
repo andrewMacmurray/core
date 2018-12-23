@@ -1,0 +1,5 @@
+#! /usr/bin/env bash
+
+elm make src/Main.elm --output=public/elm.js --optimize
+
+netlify deploy --dir=public --prod

@@ -1,14 +1,15 @@
 module Svg.Extra exposing
-    ( scaled
+    ( cx_
+    , cy_
+    , r_
+    , scaled
     , translated
     , viewBox_
     , windowBox
-    , x_
-    , y_
     )
 
 import Svg
-import Svg.Attributes exposing (transform, viewBox, x, y)
+import Svg.Attributes exposing (..)
 
 
 windowBox window =
@@ -27,12 +28,16 @@ scaled n el =
     Svg.g [ transform <| scale n ] [ el ]
 
 
-x_ =
-    x << String.fromFloat
+cx_ =
+    cx << String.fromFloat
 
 
-y_ =
-    y << String.fromFloat
+cy_ =
+    cy << String.fromFloat
+
+
+r_ =
+    r << String.fromFloat
 
 
 scale n =
