@@ -16,9 +16,5 @@ div animatedStyle attrs =
             ]
 
 
-g animatedStyle attrs =
-    Svg.g <|
-        List.concat
-            [ Animation.render animatedStyle
-            , attrs
-            ]
+g animatedStyle =
+    Svg.g <| Animation.render animatedStyle

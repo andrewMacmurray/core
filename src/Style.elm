@@ -3,6 +3,7 @@ module Style exposing
     , height
     , marginTop
     , padding
+    , pointer
     , width
     )
 
@@ -24,6 +25,10 @@ padding =
 
 marginTop =
     style "margin-top" << px
+
+
+pointer =
+    style "cursor" "pointer"
 
 
 backgroundColor =

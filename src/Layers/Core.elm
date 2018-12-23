@@ -1,10 +1,12 @@
-module Core exposing
+module Layers.Core exposing
     ( Animations
     , animationsList
+    , blueLines
     , centralCore
     , core
-    , detached
+    , frame
     , init
+    , outerLines
     , pinkLines
     , surge
     , update
@@ -50,11 +52,6 @@ init =
 coreOrigin : A.Property
 coreOrigin =
     A.transformOrigin (A.px 267) (A.px 298) (A.px 0)
-
-
-translateZero : A.Property
-translateZero =
-    A.translate (A.px 0) (A.px 0)
 
 
 update : A.Msg -> Animations -> Animations
@@ -126,31 +123,28 @@ fadeInOut =
 -- View
 
 
-detached =
-    Svg.svg [ viewBox_ 0 0 130 130 ]
-        [ translated -205 -233 centralCore
-        ]
-
-
 core : Animations -> Svg msg
 core animations =
     Svg.svg
-        [ viewBox_ 0 0 537 690
+        [ frame
         , width "100%"
         , height "100%"
         ]
         [ Svg.g []
-            [ Animated.g animations.outerLines [] [ outerLines ]
-            , Animated.g animations.whiteLines [] [ whiteLines ]
-            , Animated.g animations.pinkLines [] [ pinkLines ]
+            [ Animated.g animations.outerLines [ outerLines ]
+            , Animated.g animations.whiteLines [ whiteLines ]
+            , Animated.g animations.pinkLines [ pinkLines ]
             , Animated.g animations.center
-                []
                 [ centralCore
-                , Animated.g animations.pulse [] [ centralCore ]
+                , Animated.g animations.pulse [ centralCore ]
                 ]
-            , Animated.g animations.blueLines [] [ blueLines ]
+            , Animated.g animations.blueLines [ blueLines ]
             ]
         ]
+
+
+frame =
+    viewBox_ 0 0 537 690
 
 
 outerLines =

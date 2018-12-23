@@ -1,4 +1,4 @@
-module Tree exposing
+module Layers.Tree exposing
     ( Animations
     , animationsList
     , fadeIn
@@ -11,8 +11,8 @@ module Tree exposing
 import Animation as A
 import Animation.Spring.Presets as S
 import Animations exposing (..)
-import Core
 import Element.Animated as Animated
+import Layers.Core as Core
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
 import Svg.Extra exposing (..)
@@ -66,7 +66,7 @@ fadeWithIndex : Int -> A.State -> A.State
 fadeWithIndex i el =
     A.interrupt
         [ A.set [ A.opacity 0 ]
-        , wait <| 4500 + (i * 100)
+        , wait <| i * 100
         , A.toWith (spring 60 10) [ A.opacity 1 ]
         ]
         el
@@ -95,7 +95,7 @@ tree animations =
             List.concat <| List.indexedMap row animations
     in
     Svg.svg
-        [ viewBox_ 0 0 537 690
+        [ Core.frame
         , width "100%"
         , height "100%"
         ]
@@ -120,6 +120,6 @@ core i j animation =
         offsetY =
             100
     in
-    Animated.g animation [] [ Core.centralCore ]
+    Animated.g animation [ Core.centralCore ]
         |> translated (toFloat j * spacingX + offsetX) (toFloat i * spacingY + offsetY)
         |> scaled 0.6
